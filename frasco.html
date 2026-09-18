@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>frasco de razones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<canvas id="sky"></canvas>
+
+<nav class="top">
+  <a href="index.html">inicio</a>
+  <a href="frasco.html" class="active">frasco</a>
+  <a href="favoritos.html">favoritos</a>
+  <a href="radio.html">radio</a>
+  <a href="mapa.html">el cielo</a>
+</nav>
+
+<main>
+   
+  <h1 class="page-title">frasco de razones</h1>
+  <p class="page-sub">toca el frasco y suelta una luz. cada una es una razón.</p>
+  <div class="sun-divider">
+    <span class="rule"></span>
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" fill="#f5c563"/><g stroke="#f5c563" stroke-width="1.3"><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/></g></svg>
+    <span class="rule"></span>
+  </div>
+
+  <div class="jar-wrap">
+    <svg class="jar" id="jarSvg" viewBox="0 0 100 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="glow" cx="50%" cy="60%" r="50%">
+          <stop offset="0%" stop-color="#f5c563" stop-opacity=".45"/>
+          <stop offset="100%" stop-color="#f5c563" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <ellipse cx="50" cy="78" rx="42" ry="46" fill="url(#glow)"/>
+      <rect x="32" y="10" width="36" height="12" rx="3" fill="#d6a050"/>
+      <rect x="36" y="6" width="28" height="6" rx="3" fill="#f5c563"/>
+      <path d="M24 30 C24 25 28 22 33 22 H67 C72 22 76 25 76 30 V108 C76 118 68 124 59 124 H41 C32 124 24 118 24 108 Z" fill="#b9a3e8" fill-opacity="0.13" stroke="#d9cbf5" stroke-width="2"/>
+      <g>
+        <circle cx="40" cy="60" r="4" fill="#f5c563"/>
+        <circle cx="60" cy="74" r="3.5" fill="#ffd98a"/>
+        <circle cx="48" cy="95" r="4.5" fill="#f5c563"/>
+        <circle cx="64" cy="48" r="3" fill="#ffd98a"/>
+        <circle cx="36" cy="105" r="3" fill="#f5c563"/>
+        <circle cx="55" cy="110" r="2.5" fill="#ffd98a"/>
+      </g>
+    </svg>
+    <div class="jar-reason" id="jarReason">toca el frasco para sacar una razón</div>
+    <div class="jar-hint" id="jarHint">quedan 12 razones</div>
+  </div>
+</main>
+
+<footer>hecho con cariño!.</footer>
+
+<script src="sky.js"></script>
+<script>
+  const reasons = [
+    "porque me encanta oirte reir",
+    "porque eres una mujer unica e inigualable",
+    "porque el pasar contigo de la manera que sea hace que no se sienta la distancia",
+    "porque me haces querer siempre ser mejor persona y pareja",
+    "porque me encanta oirte cantar",
+    "porque eres la mujer y el amor de mi vida",
+    "porque estar contigo es estar en una paz inexplicable",
+    "porque de las millones de personas que existen coincidimos",
+    "porque eres lo mejor que ha dado la vida ",
+    "porque eres mi rayito de sol en mis dias grises",
+    "porque siempre estas para darme animos y ganas de seguir con todo",
+    "porque eres mi completamente mi apoyo",
+    "porque desde que estas conmigo mi vida ha dejado de ser blanco y negro ",
+    "porque quiero besarte una y otra vez toda la vida ",
+    "porque eres tal y cual como le pedi a Diosito todas las noches",
+    "porque somos tu y yo completamente para todo",
+    "porque aprendo de mis errores a diario, para no perderte nunca",
+    "porque quiero llegar a pedir tu mano",
+    "porque contigo hasta estar en silecio se vuelve comodo",
+    "porque quiero vivir todo un presente y un futuro a tu lado"
+  ];
+  let used = [];
+  const jarEl = document.getElementById('jarSvg');
+  const jarReason = document.getElementById('jarReason');
+  const jarHint = document.getElementById('jarHint');
+  jarHint.textContent = `quedan ${reasons.length} razones`;
+  jarEl.addEventListener('click', ()=>{
+    if(used.length === reasons.length) used = [];
+    let idx;
+    do { idx = Math.floor(Math.random()*reasons.length); } while(used.includes(idx));
+    used.push(idx);
+    jarReason.textContent = reasons[idx];
+    jarHint.textContent = `quedan ${reasons.length - used.length} razones`;
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+Pon aquí tus archivos mp3 con estos nombres exactos:
+
+besos.mp3     -> Besos en guerra, Morat
+como-te-atreves.mp3     -> Cómo te atreves, Morat
+cancion-cornelio.mp3    -> la canción de Cornelio que elijas
+
+Si quieres otros nombres de archivo, solo avísame y actualizo
+los data-src en radio.html para que coincidan.

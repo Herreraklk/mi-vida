@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>el cielo que compartimos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* ---- escena ---- */
+  .scene-wrap{
+    position:relative;
+    border-radius:24px;
+    overflow:hidden;
+    border:1px solid rgba(245,197,99,.2);
+    background:linear-gradient(180deg,#1b1233,#2f2350 60%,#3d2c6b);
+    margin-bottom:18px;
+  }
+  #scene{ display:block; width:100%; height:290px; cursor:pointer; }
+  .scene-hint{
+    position:absolute; bottom:10px; left:0; right:0;
+    text-align:center; font-size:11.5px; color:rgba(217,203,245,.7);
+    pointer-events:none;
+  }
+
+  /* ---- relojes ---- */
+  .clocks{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:10px;
+    background:linear-gradient(160deg,#372a5e,#42346d);
+    border:1px solid rgba(245,197,99,.18);
+    border-radius:24px;
+    padding:22px 18px;
+    margin-bottom:16px;
+  }
+  .clock{ text-align:center; }
+  .clock .cname{ font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+  .clock .ctime{
+    font-family:'Cormorant Garamond',serif; font-size:34px; color:var(--gold);
+    line-height:1.1; text-shadow:0 0 16px rgba(245,197,99,.3);
+  }
+  .clock .cday{ font-size:12px; color:var(--lavender); }
+  .clock .cphase{ font-size:16px; margin-top:2px; }
+  .gap{ text-align:center; color:var(--muted); font-size:11px; line-height:1.3; }
+  .gap .dot{
+    display:block; width:6px; height:6px; border-radius:50%;
+    background:var(--gold); margin:0 auto 6px;
+    box-shadow:0 0 10px var(--gold);
+    animation:beat 2.4s ease-in-out infinite;
+  }
+  @keyframes beat{ 0%,100%{opacity:.4;} 50%{opacity:1;} }
+
+  /* ---- selector de ciudad ---- */
+  .city-switch{ display:flex; justify-content:center; gap:8px; margin-bottom:16px; }
+  .city-switch button{
+    background:transparent; border:1px solid rgba(217,203,245,.3); color:var(--muted);
+    padding:7px 16px; border-radius:999px; font-size:13px; cursor:pointer;
+    font-family:'Quicksand',sans-serif; font-weight:500;
+  }
+  .city-switch button.active{
+    border-color:var(--gold); color:var(--gold);
+    box-shadow:0 0 12px rgba(245,197,99,.25);
+  }
+
+  /* ---- métricas ---- */
+  .metrics{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px;
+  }
+  .metric{
+    background:linear-gradient(160deg,#372a5e,#42346d);
+    border:1px solid rgba(245,197,99,.18);
+    border-radius:18px; padding:18px 10px; text-align:center;
+  }
+  .metric .num{
+    font-family:'Cormorant Garamond',serif; font-size:30px; color:var(--gold); line-height:1.1;
+    text-shadow:0 0 16px rgba(245,197,99,.3);
+  }
+  .metric .label{ font-size:11px; color:var(--muted); line-height:1.35; }
+
+  /* ---- deseos ---- */
+  .wish-box{
+    background:linear-gradient(160deg,#372a5e,#42346d);
+    border:1px solid rgba(245,197,99,.18);
+    border-radius:24px; padding:24px 20px;
+  }
+  .wish-box h2{ font-size:24px; margin-bottom:6px; }
+  .wish-box .sub{ font-size:13.5px; color:var(--muted); margin-bottom:16px; }
+  .wish-box textarea{
+    width:100%; min-height:64px; resize:vertical;
+    background:rgba(0,0,0,.18); border:1px solid rgba(217,203,245,.25);
+    border-radius:12px; padding:12px 14px; color:var(--cream);
+    font-family:'Quicksand',sans-serif; font-size:15px;
+  }
+  .wish-box textarea:focus{ outline:none; border-color:var(--gold); }
+  .wish-btn{
+    margin-top:12px; width:100%; padding:14px; border:none; border-radius:14px;
+    background:linear-gradient(135deg,var(--gold),var(--gold-warm));
+    color:#2f2350; font-weight:600; font-size:15px; cursor:pointer;
+    font-family:'Quicksand',sans-serif;
+  }
+  .wish-btn:hover{ filter:brightness(1.08); }
+  .wish-list{ margin-top:18px; display:flex; flex-direction:column; gap:10px; }
+  .wish-item{
+    display:flex; gap:12px; align-items:flex-start;
+    background:rgba(0,0,0,.15); border-radius:12px; padding:12px 14px;
+    font-family:'Cormorant Garamond',serif; font-size:17px;
+  }
+  .wish-item .flame{
+    flex:0 0 auto; width:10px; height:10px; border-radius:50%;
+    background:var(--gold); margin-top:7px;
+    box-shadow:0 0 10px var(--gold);
+  }
+  .wish-item .wdate{
+    display:block; font-family:'Quicksand',sans-serif;
+    font-size:11px; color:var(--muted); margin-top:4px;
+  }
+  .wish-empty{ font-size:13px; color:var(--muted); margin-top:16px; }
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+
+<nav class="top">
+  <a href="index.html">inicio</a>
+  <a href="frasco.html">frasco</a>
+  <a href="favoritos.html">favoritos</a>
+  <a href="radio.html">radio</a>
+  <a href="mapa.html" class="active">el cielo</a>
+</nav>
+
+<main>
+ 
+  <h1 class="page-title">el cielo que compartimos</h1>
+  <p class="page-sub">dos ciudades, dos horas distintas, la misma luz.</p>
+  <div class="sun-divider">
+    <span class="rule"></span>
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" fill="#f5c563"/><g stroke="#f5c563" stroke-width="1.3"><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/></g></svg>
+    <span class="rule"></span>
+  </div>
+
+
+
+  <div class="scene-wrap">
+    <canvas id="scene"></canvas>
+    <div class="scene-hint">toca el cielo para soltar una linterna</div>
+  </div>
+
+  <div class="clocks">
+    <div class="clock">
+      <div class="cname">Santiago</div>
+      <div class="ctime" id="t1">--:--</div>
+      <div class="cday" id="d1">—</div>
+      <div class="cphase" id="p1"></div>
+    </div>
+    <div class="gap">
+      <span class="dot"></span>
+      <span id="gapTxt">—</span>
+    </div>
+    <div class="clock">
+      <div class="cname" id="cname2">Monterrey</div>
+      <div class="ctime" id="t2">--:--</div>
+      <div class="cday" id="d2">—</div>
+      <div class="cphase" id="p2"></div>
+    </div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="num" id="kmNum">7400</div>
+      <div class="label">km entre las dos</div>
+    </div>
+    <div class="metric">
+      <div class="num" id="daysNum">0</div>
+      <div class="label">días juntos</div>
+    </div>
+    <div class="metric">
+      <div class="num" id="nextNum">—</div>
+      <div class="label" id="nextLabel">días para vernos</div>
+    </div>
+  </div>
+
+  <div class="wish-box">
+    <h2>suelta un deseo</h2>
+    <p class="sub">escribe algo que quieras que pase, mándalo al cielo y queda guardado aquí.</p>
+    <textarea id="wishText" placeholder="ojalá que..."></textarea>
+    <button class="wish-btn" id="wishBtn">soltar la linterna</button>
+    <div class="wish-list" id="wishList"></div>
+    <div class="wish-empty" id="wishEmpty">todavía no hay deseos sueltos.</div>
+  </div>
+</main>
+
+<footer>hecho con cariño, actualízalo cuando quieras.</footer>
+
+<script src="sky.js"></script>
+<script>
+  /* =====================================================
+     CONFIGURACIÓN — cambia estas dos fechas cuando quieras
+  ===================================================== */
+  const FECHA_INICIO   = '2026-02-18T00:00:00';  // cuándo empezaron
+  const FECHA_ENCUENTRO = '';                     // próxima vez que se vean, ej: '2026-12-20T00:00:00'
+                                                  // déjala vacía ('') si aún no hay fecha
+
+  /* ---------- relojes en vivo ---------- */
+  let tz2 = 'America/Monterrey';
+  const fmt = (tz, opts) => new Intl.DateTimeFormat('es-CL', {timeZone: tz, ...opts});
+
+  function faseDelDia(hora){
+    if(hora < 6)  return '🌙';
+    if(hora < 12) return '🌅';
+    if(hora < 19) return '☀️';
+    return '🌙';
+  }
+  function horaEn(tz){
+    const p = fmt(tz, {hour:'2-digit', minute:'2-digit', hour12:false}).format(new Date());
+    return p;
+  }
+  function diaEn(tz){
+    return fmt(tz, {weekday:'long', day:'numeric', month:'short'}).format(new Date());
+  }
+  function offsetHoras(tzA, tzB){
+    const now = new Date();
+    const a = new Date(now.toLocaleString('en-US', {timeZone: tzA}));
+    const b = new Date(now.toLocaleString('en-US', {timeZone: tzB}));
+    return Math.round((b - a) / 3600000);
+  }
+
+  function tickClocks(){
+    const tz1 = 'America/Santiago';
+    document.getElementById('t1').textContent = horaEn(tz1);
+    document.getElementById('t2').textContent = horaEn(tz2);
+    document.getElementById('d1').textContent = diaEn(tz1);
+    document.getElementById('d2').textContent = diaEn(tz2);
+    document.getElementById('p1').textContent = faseDelDia(+horaEn(tz1).slice(0,2));
+    document.getElementById('p2').textContent = faseDelDia(+horaEn(tz2).slice(0,2));
+
+    const diff = offsetHoras(tz1, tz2);
+    const g = document.getElementById('gapTxt');
+    if(diff === 0) g.textContent = 'misma hora';
+    else if(diff < 0) g.textContent = Math.abs(diff) + 'h atrás';
+    else g.textContent = diff + 'h adelante';
+  }
+  tickClocks();
+  setInterval(tickClocks, 1000);
+
+  /* ---------- métricas ---------- */
+  const daysNum = document.getElementById('daysNum');
+  daysNum.textContent = Math.max(0, Math.floor((Date.now() - new Date(FECHA_INICIO)) / 86400000));
+
+  const nextNum = document.getElementById('nextNum');
+  const nextLabel = document.getElementById('nextLabel');
+  if(FECHA_ENCUENTRO){
+    const d = Math.ceil((new Date(FECHA_ENCUENTRO) - Date.now()) / 86400000);
+    if(d > 0){ nextNum.textContent = d; nextLabel.textContent = 'días para vernos'; }
+    else { nextNum.textContent = '♥'; nextLabel.textContent = 'ya estamos juntos'; }
+  } else {
+    nextNum.textContent = '∞';
+    nextLabel.textContent = 'pronto, ya verás';
+  }
+
+  /* ---------- selector de ciudad ---------- */
+  const kmNum = document.getElementById('kmNum');
+  document.querySelectorAll('.city-switch button').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      document.querySelectorAll('.city-switch button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      kmNum.textContent = btn.dataset.km;
+      tz2 = btn.dataset.tz;
+      document.getElementById('cname2').textContent = btn.dataset.city;
+      sceneCityName = btn.dataset.city;
+      tickClocks();
+    });
+  });
+
+  /* ---------- deseos guardados ---------- */
+  const wishList = document.getElementById('wishList');
+  const wishEmpty = document.getElementById('wishEmpty');
+  let wishes = [];
+  try {
+    wishes = JSON.parse(localStorage.getItem('deseos_karla') || '[]');
+  } catch(e){ wishes = []; }
+
+  function renderWishes(){
+    wishList.innerHTML = '';
+    if(wishes.length === 0){ wishEmpty.style.display = 'block'; return; }
+    wishEmpty.style.display = 'none';
+    wishes.slice().reverse().forEach(w=>{
+      const el = document.createElement('div');
+      el.className = 'wish-item';
+      el.innerHTML = `<span class="flame"></span><span>${w.texto}<span class="wdate">${w.fecha}</span></span>`;
+      wishList.appendChild(el);
+    });
+  }
+  renderWishes();
+
+  document.getElementById('wishBtn').addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const ta = document.getElementById('wishText');
+    const txt = ta.value.trim();
+    if(!txt) { ta.focus(); return; }
+    const fecha = new Intl.DateTimeFormat('es-CL', {day:'numeric', month:'long', year:'numeric'}).format(new Date());
+    wishes.push({texto: txt.replace(/</g,'&lt;'), fecha});
+    try { localStorage.setItem('deseos_karla', JSON.stringify(wishes)); } catch(err){}
+    ta.value = '';
+    renderWishes();
+    soltarLinterna(null, txt);
+  });
+
+  /* ---------- escena: dos ciudades bajo el mismo cielo ---------- */
+  const sc = document.getElementById('scene');
+  const sx = sc.getContext('2d');
+  let sw, sh, sceneLanterns = [], sceneStars = [];
+  let sceneCityName = 'Monterrey';
+
+  function sceneResize(){
+    sw = sc.width = sc.offsetWidth * (window.devicePixelRatio || 1);
+    sh = sc.height = 290 * (window.devicePixelRatio || 1);
+    sx.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio || 1, 0, 0);
+    sw = sc.offsetWidth; sh = 290;
+    sceneStars = Array.from({length: 60}, ()=>({
+      x: Math.random()*sw, y: Math.random()*sh*0.62,
+      r: Math.random()*1.1 + 0.3, tw: Math.random()*Math.PI*2,
+      sp: Math.random()*0.02 + 0.004
+    }));
+  }
+  window.addEventListener('resize', sceneResize);
+
+  function soltarLinterna(x, texto){
+    sceneLanterns.push({
+      x: x === null ? sw*0.5 + (Math.random()-0.5)*sw*0.5 : x,
+      y: sh - 20,
+      size: Math.random()*5 + 11,
+      sp: Math.random()*0.35 + 0.35,
+      drift: (Math.random()-0.5)*0.3,
+      fl: Math.random()*Math.PI*2,
+      texto: texto || null,
+      life: 1
+    });
+    if(sceneLanterns.length > 40) sceneLanterns.shift();
+  }
+
+  sc.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const r = sc.getBoundingClientRect();
+    soltarLinterna(e.clientX - r.left, null);
+  });
+
+  function montana(x0, x1, base, alturas, color){
+    sx.fillStyle = color;
+    sx.beginPath();
+    sx.moveTo(x0, base);
+    alturas.forEach(p => sx.lineTo(x0 + (x1-x0)*p[0], base - p[1]));
+    sx.lineTo(x1, base);
+    sx.closePath();
+    sx.fill();
+  }
+
+  function torre(cx, base, h, nombre){
+    sx.fillStyle = '#1a1030';
+    sx.fillRect(cx-7, base-h, 14, h);
+    sx.beginPath();
+    sx.moveTo(cx-13, base-h);
+    sx.lineTo(cx, base-h-16);
+    sx.lineTo(cx+13, base-h);
+    sx.closePath();
+    sx.fill();
+    // ventana iluminada
+    const g = sx.createRadialGradient(cx, base-h*0.55, 0, cx, base-h*0.55, 26);
+    g.addColorStop(0, 'rgba(245,197,99,.55)');
+    g.addColorStop(1, 'rgba(245,197,99,0)');
+    sx.fillStyle = g;
+    sx.beginPath(); sx.arc(cx, base-h*0.55, 26, 0, Math.PI*2); sx.fill();
+    sx.fillStyle = '#f5c563';
+    sx.fillRect(cx-3, base-h*0.55-5, 6, 9);
+    // nombre
+    sx.fillStyle = 'rgba(217,203,245,.85)';
+    sx.font = '11px Quicksand, sans-serif';
+    sx.textAlign = 'center';
+    sx.fillText(nombre, cx, base+16);
+  }
+
+  function sceneDraw(t){
+    const grad = sx.createLinearGradient(0,0,0,sh);
+    grad.addColorStop(0, '#150d2b');
+    grad.addColorStop(0.6, '#2b2050');
+    grad.addColorStop(1, '#443173');
+    sx.fillStyle = grad;
+    sx.fillRect(0,0,sw,sh);
+
+    sceneStars.forEach(s=>{
+      const a = 0.25 + Math.sin(t*s.sp + s.tw)*0.35;
+      sx.fillStyle = `rgba(253,246,230,${Math.max(0,a)})`;
+      sx.beginPath(); sx.arc(s.x, s.y, s.r, 0, Math.PI*2); sx.fill();
+    });
+
+    // luna
+    sx.fillStyle = 'rgba(253,246,230,.9)';
+    sx.beginPath(); sx.arc(sw*0.5, 42, 13, 0, Math.PI*2); sx.fill();
+    const mg = sx.createRadialGradient(sw*0.5, 42, 10, sw*0.5, 42, 42);
+    mg.addColorStop(0, 'rgba(253,246,230,.25)');
+    mg.addColorStop(1, 'rgba(253,246,230,0)');
+    sx.fillStyle = mg;
+    sx.beginPath(); sx.arc(sw*0.5, 42, 42, 0, Math.PI*2); sx.fill();
+
+    const base = sh - 34;
+
+    // cordilleras de fondo
+    montana(0, sw, base+6, [[0.08,38],[0.2,62],[0.33,34],[0.5,50],[0.66,30],[0.82,58],[0.93,36]], '#2a1f4d');
+    montana(0, sw, base+10, [[0.12,26],[0.28,44],[0.45,22],[0.62,38],[0.78,20],[0.9,34]], '#221a40');
+
+    // suelo
+    sx.fillStyle = '#1a1030';
+    sx.fillRect(0, base, sw, sh-base);
+
+    torre(sw*0.16, base, 66, 'Santiago');
+    torre(sw*0.84, base, 66, sceneCityName);
+
+    // arco de luz entre ambas
+    sx.strokeStyle = 'rgba(245,197,99,.30)';
+    sx.lineWidth = 1.4;
+    sx.setLineDash([3,9]);
+    sx.lineDashOffset = -t/45;
+    sx.beginPath();
+    sx.moveTo(sw*0.16, base-72);
+    sx.quadraticCurveTo(sw*0.5, base-165, sw*0.84, base-72);
+    sx.stroke();
+    sx.setLineDash([]);
+
+    // linternas de la escena
+    sceneLanterns.forEach((l, i)=>{
+      l.y -= l.sp;
+      l.x += l.drift + Math.sin(t*0.001 + l.fl)*0.2;
+      if(l.y < -40) sceneLanterns.splice(i,1);
+
+      const glow = 0.75 + Math.sin(t*0.004 + l.fl)*0.25;
+      const g2 = sx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.size*3.2);
+      g2.addColorStop(0, `rgba(255,196,92,${0.32*glow})`);
+      g2.addColorStop(1, 'rgba(255,196,92,0)');
+      sx.fillStyle = g2;
+      sx.beginPath(); sx.arc(l.x, l.y, l.size*3.2, 0, Math.PI*2); sx.fill();
+
+      const wL = l.size*0.6, hL = l.size;
+      sx.fillStyle = 'rgba(255,205,120,.92)';
+      sx.beginPath();
+      sx.moveTo(l.x - wL*0.38, l.y - hL*0.5);
+      sx.lineTo(l.x + wL*0.38, l.y - hL*0.5);
+      sx.lineTo(l.x + wL*0.5,  l.y + hL*0.32);
+      sx.quadraticCurveTo(l.x, l.y + hL*0.62, l.x - wL*0.5, l.y + hL*0.32);
+      sx.closePath(); sx.fill();
+
+      sx.fillStyle = `rgba(255,240,200,${0.85*glow})`;
+      sx.beginPath();
+      sx.ellipse(l.x, l.y + hL*0.1, wL*0.22, hL*0.24, 0, 0, Math.PI*2);
+      sx.fill();
+    });
+
+    requestAnimationFrame(sceneDraw);
+  }
+  sceneResize();
+  requestAnimationFrame(sceneDraw);
+
+  // linternas iniciales para que no arranque vacío
+  for(let i=0;i<5;i++){
+    setTimeout(()=>soltarLinterna(null,null), i*600);
+  }
+</script>
+</body>
+</html>
